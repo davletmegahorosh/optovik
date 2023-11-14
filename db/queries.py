@@ -1,0 +1,14 @@
+CREATE_ANNOUNCEMENT_TABLE_QUERY = """
+        CREATE TABLE IF NOT EXISTS announcements
+        (ID INTEGER PRIMARY KEY,
+        USERNAME CHAR(50),
+        HASH TEXT,
+        TEXT TEXT,
+        PHONE_NUMBER_ADDRESS INTEGER,
+        PHOTO TEXT,
+        UNIQUE (HASH, ID))
+"""
+
+INSERT_ANNO_QUERY = """INSERT OR IGNORE INTO announcements VALUES (?,?,?,?,?,?)"""
+
+SELECT_ANNO_QUERY = """SELECT * FROM announcements WHERE HASH = ?"""
