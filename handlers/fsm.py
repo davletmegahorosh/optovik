@@ -24,7 +24,7 @@ async def start(message: types.Message, state:FSMContext):
             await message.answer('отправьте 1 фото вашего товара и как подпись к нему напишите описание',
                                  reply_markup=kb.cancel())
     else:
-        await message.answer('пиши в личке!!!')
+        await message.answer('бот не работает в группах, пишите боту в личные сообщения')
 
 async def text(message: types.Message, state: FSMContext):
     if message.photo and message.caption:
@@ -38,7 +38,7 @@ async def text(message: types.Message, state: FSMContext):
                              f'или: 0 123 456 789\n\n'
                              f'и адрес в одном сообщении')
     elif message.photo and not message.caption:
-        await message.answer('добавьте описание вместе с фото')
+        await message.answer('напишите описание к фото')
 
 async def phone_num(message:types.Message, state:FSMContext):
     check_phone = str(message.text).replace(' ','')
@@ -52,7 +52,7 @@ async def phone_num(message:types.Message, state:FSMContext):
     else:
         await message.answer(f'напишите ваш номер телефона\n'
                              f'пример: +996 123 456 789\n'
-                             f'или: 0 123 456 789'
+                             f'или: 0 123 456 789\n\n'
                              f'и адесс в одном сообщении')
     if verified_phone and len(message.text.replace(" ","")) > len(check_phone):
         async with state.proxy() as data:
@@ -60,7 +60,7 @@ async def phone_num(message:types.Message, state:FSMContext):
             await message.answer_photo(data['photo'], caption=f"{data['text']}\n\n"
                                                               f"{data['phone_num_address']}")
         await FSMadmin.next()
-        await message.answer('Всё нормально?', reply_markup=kb.yes_no())
+        await message.answer('Всё верно?', reply_markup=kb.yes_no())
 
 
 async def submit(message: types.Message, state: FSMContext):
@@ -68,13 +68,13 @@ async def submit(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             Database().sql_insert_user_form(data['username'], data['hash'],
                                             data['text'], data['phone_num_address'], data['photo'])
-        await bot.send_photo(chat_id=661114436 ,photo=data['photo'], caption=f"{data['hash']}"
+        await bot.send_photo(chat_id=6680196696 ,photo=data['photo'], caption=f"{data['hash']}"
                                                                             f"\n\n{data['text']}")
         await state.finish()
-        await message.answer('Мы сохранили ваш товар', reply_markup=kb.start_markup())
+        await message.answer('Мы сохранили ваш товар в базу данных 🥳', reply_markup=kb.start_markup())
     elif message.text.lower == 'нет':
         await state.finish()
-        await message.answer('удалили все', reply_markup=kb.start_markup())
+        await message.answer('отменили запись в базу данных', reply_markup=kb.start_markup())
     else:
         await message.answer('выберите "да" или "нет" ', reply_markup=kb.yes_no())
 
@@ -83,7 +83,7 @@ async def cancel_fsm(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is not None:
         await state.finish()
-        await message.answer('удалили все', reply_markup=kb.start_markup())
+        await message.answer('отменили запись в базу данных', reply_markup=kb.start_markup())
 
 
 def register_handlers_fsm(dp: Dispatcher):
